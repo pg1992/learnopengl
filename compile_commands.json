@@ -1,0 +1,28 @@
+[
+  {
+    "file": "src/gl.c",
+    "arguments": [
+      "/usr/bin/g++",
+      "-ggdb3",
+      "-Iinclude",
+      "src/gl.c",
+      "-o",
+      "bin/main.elf"
+    ],
+    "directory": "/home/hefesto/src/tutorial/opengl/learnopengl",
+    "output": "bin/main.elf"
+  },
+  {
+    "file": "src/main.cpp",
+    "arguments": [
+      "/usr/bin/g++",
+      "-ggdb3",
+      "-Iinclude",
+      "src/main.cpp",
+      "-o",
+      "bin/main.elf"
+    ],
+    "directory": "/home/hefesto/src/tutorial/opengl/learnopengl",
+    "output": "bin/main.elf"
+  }
+]
