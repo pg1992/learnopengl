@@ -1,6 +1,8 @@
-bin/main.elf: src/main.cpp
-	g++ -ggdb3 -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -Iinclude src/gl.c src/main.cpp -o bin/main.elf
+all: bin/00-triangle.elf
 
-.PHONY: clean
+bin/00-triangle.elf: src/00-triangle.cpp
+	g++ -ggdb3 -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -Iinclude src/gl.c src/00-triangle.cpp -o bin/00-triangle.elf
+
+.PHONY: clean all
 clean:
-	rm bin/main.elf
+	rm -fv bin/*.elf
