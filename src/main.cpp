@@ -69,6 +69,10 @@ int main()
 
     glViewport(0, 0, WIDTH, HEIGHT);
 
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
     GLuint vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -110,20 +114,27 @@ int main()
         std::cout << "ERROR::PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
     }
 
-    glUseProgram(shaderProgram);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    glUseProgram(shaderProgram);
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
     while (!glfwWindowShouldClose(window))
     {
+        glfwPollEvents();
+
         float r = colors[color_index][0];
         float g = colors[color_index][1];
         float b = colors[color_index][2];
 
-        glfwPollEvents();
-
         glClearColor(r, g, b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
     }
