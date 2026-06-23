@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS += -ggdb3 -Iinclude
-LIBS += -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+LIBS += -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lm
 TARGETS = bin/00-triangle.elf bin/01-triangle.elf bin/02-triangle.elf bin/03-triangle.elf bin/10-shader.elf
 
 all: $(TARGETS)
