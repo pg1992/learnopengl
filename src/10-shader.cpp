@@ -153,26 +153,32 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+        // render
+        // ------
+        // pick background color
         float r = colors[color_index][0];
         float g = colors[color_index][1];
         float b = colors[color_index][2];
 
-        // render
-        // ------
+        // clear the colorbuffer
         glClearColor(r, g, b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // draw our first triangle
+        // be sure to activate the shader
+        glUseProgram(shaderProgram);
+
+        // update the uniform color
         float timeValue = glfwGetTime();
         float greenValue = (std::sin(2 * M_PI * timeValue) / 2.0f) + 0.5f;
         int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-
-        glUseProgram(shaderProgram);
         glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+        // now render the triangle
         glBindVertexArray(vao);  // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
         // glBindVertexArray(0);  // no need to unbind it every time
 
+        // glfw: swapp buffers and poll IO events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
