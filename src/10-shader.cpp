@@ -4,6 +4,8 @@
 #include <Shader.h>
 
 #include <iostream>
+#include <cmath>
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -19,26 +21,6 @@ GLfloat colors[TOTAL_COLORS][3] = {
     {.0, .0, 1.},
     {.1, .1, .1},
 };
-
-const char *vertexShaderSource =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n"
-    "out vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = vec4(aPos, 1.0);\n"
-    "    ourColor = aColor;\n"
-    "}\0";
-
-const char *fragmentShaderSource =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "in  vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(ourColor, 1.0);\n"
-    "}\0";
 
 int main()
 {
@@ -119,6 +101,8 @@ int main()
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
+    double initTime { glfwGetTime() };
+
     while (!glfwWindowShouldClose(window))
     {
         // render
@@ -134,6 +118,10 @@ int main()
 
         // be sure to activate the shader
         ourShader.use();
+        double currTime { glfwGetTime() };
+        double dt { currTime - initTime };
+        double offset { std::sin(2 * M_PI * .5 * dt) / 2.0 };
+        ourShader.setFloat("myOffset", offset);
 
         // now render the triangle
         glBindVertexArray(vao);  // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
