@@ -16,6 +16,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 const GLuint WIDTH = 800;
 const GLuint HEIGHT = 600;
 
+float mixer = 0.2;
+
 int main()
 {
     // glfw: initialize and configure
@@ -60,10 +62,10 @@ int main()
     // ------------------------------------------------------------------
     GLfloat vertices[] = {
         // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 2.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, // bottom right
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
         -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 2.0f, // top left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // top left
     };
     GLuint indices[] = {
         0, 1, 3,
@@ -158,6 +160,7 @@ int main()
 
         // be sure to activate the shader
         ourShader.use();
+        ourShader.setFloat("mixer", mixer);
         // now render the triangle
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
@@ -193,6 +196,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             case GLFW_KEY_ESCAPE:
             case GLFW_KEY_Q:
                 glfwSetWindowShouldClose(window, GL_TRUE);
+                break;
+            case GLFW_KEY_UP:
+                mixer = std::min(1.0, mixer + 0.1);
+                break;
+            case GLFW_KEY_DOWN:
+                mixer = std::max(0.0, mixer - 0.1);
                 break;
             default:
                 break;
