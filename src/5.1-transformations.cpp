@@ -148,6 +148,8 @@ int main()
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
 
+    double initialTime = glfwGetTime();
+
     while (!glfwWindowShouldClose(window))
     {
         // render
@@ -170,12 +172,19 @@ int main()
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
         transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        ourShader.setMat4("transform", transform);
+        // render container
+        //glBindVertexArray(vao);  // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        // set matrix
+        // second transformation
+        transform = glm::mat4(1.0f);
+        transform = glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
+        double dt = glfwGetTime() - initialTime;
+        double scaleAmount = (std::sin(2 * M_PI * dt) + 1.0) / 2.0;
+        transform = glm::scale(transform, glm::vec3(scaleAmount));
         ourShader.setMat4("transform", transform);
 
-        // render container
-        glBindVertexArray(vao);  // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glBindVertexArray(0);  // no need to unbind it every time
 
