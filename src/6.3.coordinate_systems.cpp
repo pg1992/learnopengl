@@ -15,8 +15,8 @@
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-const GLuint WIDTH = 800;
-const GLuint HEIGHT = 600;
+GLuint WIDTH = 800;
+GLuint HEIGHT = 600;
 
 float mixer = 0.2;
 
@@ -227,7 +227,10 @@ int main()
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i + 10.0f;
-            model = glm::rotate(model, (float) dt * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            if (i % 3 == 0)
+                model = glm::rotate(model, (float) dt * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            else
+                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             ourShader.setMat4("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -275,4 +278,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    WIDTH = width;
+    HEIGHT = height;
 }
