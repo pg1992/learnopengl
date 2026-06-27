@@ -4,7 +4,8 @@ LIBS += -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lm
 TARGETS = bin/00-triangle.elf bin/01-triangle.elf bin/02-triangle.elf \
           bin/03-triangle.elf bin/10-shader.elf bin/20-texture.elf    \
           bin/4.1-texture.elf bin/4.2-texture.elf bin/5.1-transformations.elf \
-          bin/6.1.coordinate_systems.elf bin/6.2.coordinate_systems.elf
+          bin/6.1.coordinate_systems.elf bin/6.2.coordinate_systems.elf \
+          bin/6.3.coordinate_systems.elf
 
 all: $(TARGETS)
 
@@ -19,6 +20,7 @@ bin/4.2-texture.elf            : src/4.2-texture.cpp src/Shader.cpp
 bin/5.1-transformations.elf    : src/5.1-transformations.cpp src/Shader.cpp
 bin/6.1.coordinate_systems.elf : src/6.1.coordinate_systems.cpp src/Shader.cpp
 bin/6.2.coordinate_systems.elf : src/6.2.coordinate_systems.cpp src/Shader.cpp
+bin/6.3.coordinate_systems.elf : src/6.3.coordinate_systems.cpp src/Shader.cpp
 
 $(TARGETS):
 	$(CC) $(LIBS) $(CFLAGS) src/gl.c $^ -o $@
