@@ -1,10 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <glad/gl.h>
+#include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
 
 #include <Shader.h>
 
@@ -12,27 +12,22 @@
 #include <cmath>
 
 
-void processInput(GLFWwindow* window);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void processInput(GLFWwindow* window);
 
-GLuint SCR_WIDTH = 800;
-GLuint SCR_HEIGHT = 600;
-
-float mixer = 0.2;
+// settings
+unsigned int SCR_WIDTH = 800;
+unsigned int SCR_HEIGHT = 600;
 
 // camera
-// ------
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 
-double deltaTime = 0.0;  // Time between current frame and last frame
-double lastFrame = 0.0;  // Time of last frame
+// timing
+double deltaTime = 0.0;  // time between current frame and last frame
+double lastFrame = 0.0;  // time of last frame
 
 int main()
 {
@@ -42,7 +37,6 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     // glfw: window creation
     // ---------------------
@@ -54,9 +48,8 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
-
-    glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -68,12 +61,14 @@ int main()
 
     std::cout << "Loaded OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    // configure global opengl state
+    // -----------------------------
     glEnable(GL_DEPTH_TEST);
+    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
     // build and compile our shader program
     // ------------------------------------
-    Shader ourShader("src/7.1.camera.vs", "src/7.1.camera.fs");
+    Shader ourShader("src/7.2.camera.vs", "src/7.2.camera.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -120,8 +115,21 @@ int main()
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
+    // world space position of our cubes
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f),
+    };
 
-    GLuint vao, vbo;
+    unsigned int vao, vbo;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
@@ -142,17 +150,18 @@ int main()
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    unsigned int texture1;
+    unsigned int texture1, texture2;
+    // texture 1
+    // ---------
     glGenTextures(1, &texture1);
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
-    // set the texture wrapping/filtering options (on the currently bound
-    // texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load and generate the texture
+    // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load("assets/container.jpg", &width, &height, &nrChannels, 0);
@@ -166,15 +175,17 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
-
-    unsigned int texture2;
+    // texture 2
+    // ---------
     glGenTextures(1, &texture2);
-    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
+    // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load image, create texture and generate mipmaps
     data = stbi_load("assets/awesomeface.png", &width, &height, &nrChannels, 0);
     if (data)
     {
@@ -191,40 +202,31 @@ int main()
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
 
-    glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( 2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3( 1.3f, -2.0f, -2.5f),
-        glm::vec3( 1.5f,  2.0f, -2.5f),
-        glm::vec3( 1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f),
-    };
-
     while (!glfwWindowShouldClose(window))
     {
+        // per-frame time logic
+        // --------------------
+        double currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        // input
+        // -----
+        processInput(window);
+
         // render
         // ------
-
-        // clear the colorbuffer
-        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // be sure to activate the shader
-        ourShader.use();
-        ourShader.setFloat("mixer", mixer);
-        // now render the triangle
+        // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
-        double currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        // activate shader
+        ourShader.use();
 
         // create matrices
         // ---------------
@@ -258,7 +260,6 @@ int main()
         // glfw: swapp buffers and poll IO events
         glfwSwapBuffers(window);
         glfwPollEvents();
-        processInput(window);
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
@@ -294,12 +295,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             case GLFW_KEY_ESCAPE:
             case GLFW_KEY_Q:
                 glfwSetWindowShouldClose(window, GL_TRUE);
-                break;
-            case GLFW_KEY_UP:
-                mixer = std::min(1.0, mixer + 0.1);
-                break;
-            case GLFW_KEY_DOWN:
-                mixer = std::max(0.0, mixer - 0.1);
                 break;
             default:
                 break;
