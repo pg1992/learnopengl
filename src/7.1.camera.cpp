@@ -232,11 +232,10 @@ int main()
                            glm::vec3(0.0, 0.0, 0.0),
                            glm::vec3(0.0, 1.0, 0.0)
                );
+        ourShader.setMat4("view", view);
 
         // projection matrix
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-        ourShader.setMat4("view", view);
         ourShader.setMat4("projection", projection);
 
         glBindVertexArray(vao);
