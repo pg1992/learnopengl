@@ -6,7 +6,7 @@ TARGETS = bin/00-triangle.elf bin/01-triangle.elf bin/02-triangle.elf \
           bin/4.1-texture.elf bin/4.2-texture.elf bin/5.1-transformations.elf \
           bin/6.1.coordinate_systems.elf bin/6.2.coordinate_systems.elf \
           bin/6.3.coordinate_systems.elf bin/7.1.camera.elf bin/7.2.camera.elf \
-          bin/7.3.camera.elf
+          bin/7.3.camera.elf bin/7.4.camera.elf
 
 all: $(TARGETS)
 
@@ -25,6 +25,7 @@ bin/6.3.coordinate_systems.elf : src/6.3.coordinate_systems.cpp src/Shader.cpp
 bin/7.1.camera.elf             : src/7.1.camera.cpp src/Shader.cpp
 bin/7.2.camera.elf             : src/7.2.camera.cpp src/Shader.cpp
 bin/7.3.camera.elf             : src/7.3.camera.cpp src/Shader.cpp
+bin/7.4.camera.elf             : src/7.4.camera.cpp src/Shader.cpp
 
 $(TARGETS):
 	$(CC) $(LIBS) $(CFLAGS) src/gl.c $^ -o $@
