@@ -178,11 +178,21 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // moving light position
+        float radius = 5.0f;
+        float rotFreq = 0.1f;
+        float waveFreq = 2.0f;
+        glm::vec3 movingLightPos = glm::vec3(1.0f);
+        movingLightPos.x = std::cos(2 * M_PI * rotFreq * currentFrame) * radius;
+        movingLightPos.y = std::cos(2 * M_PI * waveFreq * currentFrame);
+        movingLightPos.z = std::sin(2 * M_PI * rotFreq * currentFrame) * radius;
+
         // be sure to activate shader when setting uniforms/drawing objects
         lightingShader.use();
         lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
         lightingShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
-        lightingShader.setVec3("lightPos", lightPos);
+        //lightingShader.setVec3("lightPos", lightPos);
+        lightingShader.setVec3("lightPos", movingLightPos);
         lightingShader.setVec3("viewPos", camera.Position);
 
         // view/projection transformations
@@ -204,7 +214,7 @@ int main()
         lightCubeShader.setMat4("projection", projection);
         lightCubeShader.setMat4("view", view);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
+        model = glm::translate(model, movingLightPos);
         model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
         lightCubeShader.setMat4("model", model);
 
